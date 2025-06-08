@@ -15,6 +15,20 @@ fi
 echo "Detected shell: $SHELL_NAME"
 echo "Using profile file: $PROFILE"
 
+if [ -f /etc/os-release ]; then
+  . /etc/os-release
+  if [[ "$ID" == "ubuntu" || "$ID_LIKE" == *"debian"* ]]; then
+    echo "Detected Ubuntu/Debian system. Installing dependencies..."
+    sudo apt update
+    sudo apt install -y build-essential libssl-dev zlib1g-dev libbz2-dev \
+      libreadline-dev libsqlite3-dev libffi-dev liblzma-dev wget curl git
+  else
+    echo "Not Ubuntu/Debian. Skipping apt package installation."
+  fi
+else
+  echo "Cannot detect OS type. Skipping apt package installation."
+fi
+
 function append_if_not_exists() {
   local line="$1"
   local file="$2"
