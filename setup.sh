@@ -1,26 +1,84 @@
 #!/bin/bash
 set -e
 
-# 指定 python 版本（这里用系统默认 python3）
-PYTHON_BIN=python3
-if ! command -v $PYTHON_BIN &> /dev/null
-then
-  echo "Error: $PYTHON_BIN not found. Please install Python 3."
-  exit 1
+PYTHON_VERSION="3.11.4"
+
+SHELL_NAME=$(basename "$SHELL")
+if [ "$SHELL_NAME" = "zsh" ]; then
+  PROFILE="$HOME/.zshrc"
+elif [ "$SHELL_NAME" = "bash" ]; then
+  PROFILE="$HOME/.bashrc"
+else
+  PROFILE="$HOME/.profile"
+fi
+
+echo "Detected shell: $SHELL_NAME"
+echo "Using profile file: $PROFILE"
+
+function append_if_not_exists() {
+  local line="$1"
+  local file="$2"
+  grep -qxF "$line" "$file" || echo "$line" >> "$file"
+}
+
+function setup_pyenv_env() {
+  append_if_not_exists 'export PATH="$HOME/.pyenv/bin:$PATH"' "$PROFILE"
+  append_if_not_exists 'eval "$(pyenv init --path)"' "$PROFILE"
+  append_if_not_exists 'eval "$(pyenv init -)"' "$PROFILE"
+  append_if_not_exists 'eval "$(pyenv virtualenv-init -)"' "$PROFILE"
+  source "$PROFILE"
+  echo "Added pyenv init code to $PROFILE"
+}
+
+function setup_poetry_env() {
+  local poetry_path='export PATH="$HOME/.local/bin:$PATH"'
+  append_if_not_exists "$poetry_path" "$PROFILE"
+  source "$PROFILE"
+  echo "Added Poetry bin path to $PROFILE"
+}
+
+
+
+
+
+echo "👉 Checking pyenv installation..."
+if ! command -v pyenv &> /dev/null; then
+  echo "pyenv not found, installing pyenv..."
+  curl https://pyenv.run | bash
+  setup_pyenv_env
+  export PATH="$HOME/.pyenv/bin:$PATH"
+  eval "$(pyenv init --path)"
+  eval "$(pyenv init -)"
+  eval "$(pyenv virtualenv-init -)"
+else
+  echo "pyenv found."
 fi
 
 
 
 
-echo "👉 Checking Poetry installation..."
-if ! command -v poetry &> /dev/null
-then
-  echo "Poetry not found. Installing Poetry..."
+
+if ! pyenv versions --bare | grep -q "^${PYTHON_VERSION}$"; then
+  echo "Installing Python $PYTHON_VERSION via pyenv..."
+  pyenv install "$PYTHON_VERSION"
+else
+  echo "Python $PYTHON_VERSION already installed."
+fi
+pyenv local "$PYTHON_VERSION"
+
+
+
+
+
+if ! command -v poetry &> /dev/null; then
+  echo "Poetry not found, installing Poetry..."
   curl -sSL https://install.python-poetry.org | python3 -
+  setup_poetry_env
   export PATH="$HOME/.local/bin:$PATH"
 else
   echo "Poetry found."
 fi
+
 
 
 
@@ -29,7 +87,7 @@ echo "Removing current VENV..."
 poetry env remove --all || true
 echo "Creating virtual environment in project folder..."
 
-poetry env use $PYTHON_BIN
+poetry env use $PYTHON_VERSION
 poetry install
 
 
