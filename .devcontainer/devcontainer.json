@@ -5,9 +5,14 @@
   },
   "customizations": {
     "vscode": {
-      "extensions": ["ms-python.python", "ms-python.vscode-pylance"]
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-python.black-formatter"
+      ]
     }
   },
   "postCreateCommand": "poetry install",
-  "remoteUser": "root"
+  "remoteUser": "root",
+  "runArgs": ["-e", "ENV=dev"]
 }
