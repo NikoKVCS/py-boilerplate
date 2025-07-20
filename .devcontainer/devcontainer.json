@@ -12,7 +12,7 @@
       ]
     }
   },
-  "postCreateCommand": "poetry install",
+  "postCreateCommand": "poetry install && git config --global --add safe.directory /workspaces/*",
   "remoteUser": "root",
   "runArgs": ["-e", "ENV=dev"]
 }
