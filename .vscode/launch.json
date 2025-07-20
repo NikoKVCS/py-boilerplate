@@ -2,11 +2,30 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Run main.py",
+      "name": "Debug Current File",
       "type": "debugpy",
       "request": "launch",
-      "program": "${workspaceFolder}/src/main.py",
-      "console": "integratedTerminal"
+      "program": "${file}",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "justMyCode": true,
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/src:${env:PYTHONPATH}"
+      }
+    },
+    {
+      "name": "Debug Python File (Advanced)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${file}",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "justMyCode": false,
+      "stopOnEntry": false,
+      "args": [],
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/src:${env:PYTHONPATH}"
+      }
     }
   ]
 }
