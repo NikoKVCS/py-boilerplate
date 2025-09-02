@@ -21,4 +21,16 @@ RUN poetry config virtualenvs.in-project true && \
 
 COPY . .
 
-CMD ["poetry", "run", "python", "src/main.py"]
+
+ARG ENVIRONMENT=dev
+ENV ENVIRONMENT=${ENVIRONMENT}
+
+# 若不是 production，安装 code-server
+RUN if [ "$ENVIRONMENT" != "production" ]; then \
+    curl -fsSL https://code-server.dev/install.sh | sh ; \
+    fi
+
+# 启动逻辑
+COPY start.sh /start.sh
+RUN chmod +x /start.sh
+ENTRYPOINT ["/start.sh"]
