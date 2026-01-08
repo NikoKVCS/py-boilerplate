@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 定义项目名
-PROJECT_NAME="hkserver"
+PROJECT_NAME="boilerplate"
 
 git pull
 
