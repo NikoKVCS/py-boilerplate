@@ -12,6 +12,9 @@ RUN apt-get update && \
     ln -s /root/.local/bin/poetry /usr/local/bin/poetry && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
+RUN apt-get update && apt-get install -y sudo
+RUN apt-get update && apt-get install -y --no-install-recommends rsync
+
 WORKDIR /app
 
 COPY pyproject.toml poetry.lock* ./
