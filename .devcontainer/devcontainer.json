@@ -14,5 +14,8 @@
   },
   "overrideCommand": false,
   "remoteUser": "root",
-  "runArgs": ["-e", "ENV=dev", "-p", "9875:9875"]
+  "runArgs": ["--user", "root", "-e", "ENV=dev", "-p", "9875:9875"],
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
+  "workspaceFolder": "/workspace",
+  "postCreateCommand": "rsync -a --exclude '.git' /app/ /workspace/"
 }
